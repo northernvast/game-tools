@@ -11,14 +11,14 @@ function round(value, digits) {
 class SubStatCandidate {
     #decimalPlaces;
 
-    constructor(decimalPlaces, initVals, combination) {
+    constructor(decimalPlaces, initialValues, combination) {
         this.#decimalPlaces = decimalPlaces;
-        this.initVals = initVals;
+        this.initialValues = initialValues;
         this.combination = combination;
     }
 
     #calc() {
-        let [low, med, high] = this.initVals;
+        let [low, med, high] = this.initialValues;
         let [l, m, h] = this.combination;
         return low*l + med*m + high*h;
     }
@@ -27,7 +27,7 @@ class SubStatCandidate {
         let maxDigits = 0;
         for (let i = 0; i < 3; i++) {
             if (this.combination[i] > 0) {
-                let decimalPart = this.initVals[i].toString().split(".")[1];
+                let decimalPart = this.initialValues[i].toString().split(".")[1];
                 if (decimalPart != undefined && maxDigits < decimalPart.length) {
                     maxDigits = decimalPart.length;
                 }
@@ -46,29 +46,33 @@ class SubStatCandidate {
     }
 
     get growth() {
-        return this.#calc() / this.initVals[2];
+        return this.#calc() / this.initialValues[2];
     }
 }
 
+let COMBINATIONS = [ // 83 combinations
+    [1,0,0],[0,1,0],[0,0,1],[2,0,0],[1,1,0],[1,0,1],[0,2,0],[0,1,1],[0,0,2],[3,0,0],
+    [2,1,0],[2,0,1],[1,2,0],[1,1,1],[1,0,2],[0,3,0],[0,2,1],[0,1,2],[0,0,3],[4,0,0],
+    [3,1,0],[3,0,1],[2,2,0],[2,1,1],[2,0,2],[1,3,0],[1,2,1],[1,1,2],[1,0,3],[0,4,0],
+    [0,3,1],[0,2,2],[0,1,3],[0,0,4],[5,0,0],[4,1,0],[4,0,1],[3,2,0],[3,1,1],[3,0,2],
+    [2,3,0],[2,2,1],[2,1,2],[2,0,3],[1,4,0],[1,3,1],[1,2,2],[1,1,3],[1,0,4],[0,5,0],
+    [0,4,1],[0,3,2],[0,2,3],[0,1,4],[0,0,5],[6,0,0],[5,1,0],[5,0,1],[4,2,0],[4,1,1],
+    [4,0,2],[3,3,0],[3,2,1],[3,1,2],[3,0,3],[2,4,0],[2,3,1],[2,2,2],[2,1,3],[2,0,4],
+    [1,5,0],[1,4,1],[1,3,2],[1,2,3],[1,1,4],[1,0,5],[0,6,0],[0,5,1],[0,4,2],[0,3,3],
+    [0,2,4],[0,1,5],[0,0,6]
+];
+
 class SubStat {
-    constructor(name, weight, decimalPlaces, initVals) {
+    constructor(name, weight, decimalPlaces, initialValues) {
         this.name = name;
         this.weight = weight;
-        this.initVals = initVals;
+        this.initialValues = initialValues;
         this.candidates = [];
         this.groups = [];
 
-        [ // 83 combinations
-            [1,0,0],[0,1,0],[0,0,1],[2,0,0],[1,1,0],[1,0,1],[0,2,0],[0,1,1],[0,0,2],[3,0,0],
-            [2,1,0],[2,0,1],[1,2,0],[1,1,1],[1,0,2],[0,3,0],[0,2,1],[0,1,2],[0,0,3],[4,0,0],
-            [3,1,0],[3,0,1],[2,2,0],[2,1,1],[2,0,2],[1,3,0],[1,2,1],[1,1,2],[1,0,3],[0,4,0],
-            [0,3,1],[0,2,2],[0,1,3],[0,0,4],[5,0,0],[4,1,0],[4,0,1],[3,2,0],[3,1,1],[3,0,2],
-            [2,3,0],[2,2,1],[2,1,2],[2,0,3],[1,4,0],[1,3,1],[1,2,2],[1,1,3],[1,0,4],[0,5,0],
-            [0,4,1],[0,3,2],[0,2,3],[0,1,4],[0,0,5],[6,0,0],[5,1,0],[5,0,1],[4,2,0],[4,1,1],
-            [4,0,2],[3,3,0],[3,2,1],[3,1,2],[3,0,3],[2,4,0],[2,3,1],[2,2,2],[2,1,3],[2,0,4],
-            [1,5,0],[1,4,1],[1,3,2],[1,2,3],[1,1,4],[1,0,5],[0,6,0],[0,5,1],[0,4,2],[0,3,3],
-            [0,2,4],[0,1,5],[0,0,6]
-        ].forEach((c) => this.candidates.push(new SubStatCandidate(decimalPlaces, initVals, c)));
+        for (let c of COMBINATIONS) {
+            this.candidates.push(new SubStatCandidate(decimalPlaces, initialValues, c));
+        }
 
         this.candidates.sort((a,b) => a.value - b.value);
 
@@ -93,19 +97,19 @@ class SubStat {
     }
 }
 
-const STATS = [
-    new SubStat("HP",           0.60, 0, [33.87, 38.103755, 42.33751]),
-    new SubStat("ATK",          0.60, 0, [16.935, 19.051877, 21.168754]),
-    new SubStat("DEF",          0.60, 0, [16.935, 19.051877, 21.168754]),
-    new SubStat("SPD",          1.04, 0, [2.0, 2.3, 2.6]),
-    new SubStat("HP%",             1, 1, [3.456, 3.888, 4.32]),
-    new SubStat("ATK%",            1, 1, [3.456, 3.888, 4.32]),
-    new SubStat("DEF%",            1, 1, [4.32, 4.86, 5.4]),
-    new SubStat("CRIT Rate",       1, 1, [2.592, 2.916, 3.24]),
-    new SubStat("CRIT DMG",        1, 1, [5.184, 5.832, 6.48]),
-    new SubStat("Break Effect",    1, 1, [5.184, 5.832, 6.48]),
-    new SubStat("Effect Hit Rate", 1, 1, [3.456, 3.888, 4.32]),
-    new SubStat("Effect RES",      1, 1, [3.456, 3.888, 4.32])
+const DATA = [
+    new SubStat("HP", 0.60, 0, [33.87, 38.103755, 42.33751]),
+    new SubStat("攻撃力", 0.60, 0, [16.935, 19.051877, 21.168754]),
+    new SubStat("防御力", 0.60, 0, [16.935, 19.051877, 21.168754]),
+    new SubStat("速度", 1.04, 0, [2.0, 2.3, 2.6]),
+    new SubStat("HP%", 1, 1, [3.456, 3.888, 4.32]),
+    new SubStat("攻撃力%", 1, 1, [3.456, 3.888, 4.32]),
+    new SubStat("防御力%", 1, 1, [4.32, 4.86, 5.4]),
+    new SubStat("会心率", 1, 1, [2.592, 2.916, 3.24]),
+    new SubStat("会心ダメージ", 1, 1, [5.184, 5.832, 6.48]),
+    new SubStat("撃破特攻", 1, 1, [5.184, 5.832, 6.48]),
+    new SubStat("効果命中", 1, 1, [3.456, 3.888, 4.32]),
+    new SubStat("効果抵抗", 1, 1, [3.456, 3.888, 4.32])
 ];
 
 /* UI components */
@@ -124,7 +128,7 @@ function createElementWithText(tagName, text) {
 
 function updateNames(names) {
     clear(names);
-    for (let stat of STATS) {
+    for (let stat of DATA) {
         names.appendChild(createElementWithText("option", stat.name));
     }
 }
@@ -134,7 +138,7 @@ const MIXED_COLORS = ["#99EEEE", "#99FFBB", "#BBFF99", "#EEEE99", "#FFBB99"]
 
 function updateValues(names, values) {
     clear(values);
-    let stat = STATS[names.selectedIndex];
+    let stat = DATA[names.selectedIndex];
     for (let group of stat.groups) {
         let op = createElementWithText("option", group[0].displayedVal);
 
@@ -158,7 +162,7 @@ function updateValues(names, values) {
 
 function updateCandidates(names, values, candidates) {
     clear(candidates);
-    let stat = STATS[names.selectedIndex];
+    let stat = DATA[names.selectedIndex];
     let tr = document.createElement("tr");
     tr.appendChild(createElementWithText("th", "強化"));
     tr.appendChild(createElementWithText("th", "近似値"));
@@ -182,14 +186,14 @@ function updateCandidates(names, values, candidates) {
 }
 
 function updateWeight(names, weight) {
-    weight.value = STATS[names.selectedIndex].weight;
+    weight.value = DATA[names.selectedIndex].weight;
 }
 
-function updateScore(options) {
+function updateScore(elements) {
     let min = 0;
     let max = 0;
-    for (let o of options) {
-        let stat = STATS[o.names.selectedIndex];
+    for (let o of elements) {
+        let stat = DATA[o.names.selectedIndex];
         let group = stat.groups[o.values.selectedIndex];
 
         min += stat.getScore(group[0]);
@@ -205,13 +209,13 @@ function updateScore(options) {
 }
 
 function init() {
-    let options = [];
+    let elements = [];
     for (let i = 0; i < 4; i++) {
         let names = document.getElementById("sub-stat-names" + i);
         let values = document.getElementById("sub-stat-values" + i);
         let candidates = document.getElementById("sub-stat-candidates" + i);
         let weight = document.getElementById("sub-stat-weight" + i);
-        options.push({names: names, values: values});
+        elements.push({names: names, values: values});
 
         updateNames(names);
         switch (i) {
@@ -230,22 +234,22 @@ function init() {
             updateValues(names, values);
             updateCandidates(names, values, candidates);
             updateWeight(names, weight);
-            updateScore(options);
+            updateScore(elements);
         });
 
         values.addEventListener("change", () => {
             updateCandidates(names, values, candidates);
-            updateScore(options);
+            updateScore(elements);
         });
 
         weight.addEventListener("change", () => {
-            STATS[names.selectedIndex].weight = weight.value;
+            DATA[names.selectedIndex].weight = weight.value;
             updateCandidates(names, values, candidates);
             updateWeight(names, weight);
-            updateScore(options);
+            updateScore(elements);
         });
     }
-    updateScore(options);
+    updateScore(elements);
 }
 
 init();
