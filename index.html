@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>test</title>
+    <style>
+        label {
+            font-size: 13px;
+        }
+        table {
+            font-family: arial, sans-serif;
+            border-collapse: collapse;
+        }
+        td, th {
+            height: 40px;
+            width: 40px;
+            border: 1px solid #aaa;
+            text-align: center;
+        }
+        th {
+            font-size: 13px;
+            height: 30px;
+        }
+        td:nth-of-type(2), th:nth-of-type(2) {
+            width: 60px;
+        }
+        select {
+            width: 110px;
+        }
+        #flexbox div {
+            width: 235px;
+            border: 1px solid white;
+            margin: 5px;
+        }
+        #flexbox {
+            border: 1px solid white;
+            display:flex;
+        }
+    </style>
+</head>
+<body>
+<h1>Honkai: Star Rail</h1>
+
+<h5>5★遺物サブステータス評価</h5>
+<p id="score"></p>
+<div id="flexbox">
+    <div id="wrapper0">
+        <select class="sub-stat-names"></select>
+        <select class="sub-stat-values"></select>
+        <label>候補</label>
+        <table class="sub-stat-table"></table>
+        <label for="weight0">重み</label>
+        <input id="weight0" type="number" value="1" step="0.1" min="0" />
+    </div>
+    <div id="wrapper1">
+        <select class="sub-stat-names"></select>
+        <select class="sub-stat-values"></select>
+        <label>候補</label>
+        <table class="sub-stat-table"></table>
+        <label for="weight1">重み</label>
+        <input id="weight1" type="number" value="1" step="0.1" min="0" />
+    </div>
+    <div id="wrapper2">
+        <select class="sub-stat-names"></select>
+        <select class="sub-stat-values"></select>
+        <label>候補</label>
+        <table class="sub-stat-table"></table>
+        <label for="weight2">重み</label>
+        <input id="weight2" type="number" value="1" step="0.1" min="0" />
+    </div>
+    <div id="wrapper3">
+        <select class="sub-stat-names"></select>
+        <select class="sub-stat-values"></select>
+        <label>候補</label>
+        <table class="sub-stat-table"></table>
+        <label for="weight3">重み</label>
+        <input id="weight3" type="number" value="1" step="0.1" min="0" />
+    </div>
+</div>
+
+<script src="calcSubStats.js"></script>
+
+<ul>
+    <li>強化: そのサブステータスが強化された回数(合計：+４または+５)</li>
+    <li>low, med, high: 初期値または上昇値の抽選回数</li>
+    <li>score: メインステータスの最大値を100とした値　※防御固定値に関しては攻撃固定値と同様に調整</li>
+</ul>
+
+<hr />
+<blockquote>
+    <p><cite>出典1：<a href="https://www.prydwen.gg/star-rail/guides/relic-stats/">Relic Stats | Honkai: Star Rail | Prydwen Institute</a></cite></p>
+    <p><cite>出典2：<a href="https://honkai-star-rail.fandom.com/wiki/Relic/Stats">Relic/Stats | Honkai: Star Rail Wiki | Fandom</a></cite></p>
+    <p><cite>出典3：<a href="https://wikiwiki.jp/star-rail/%E3%83%80%E3%83%A1%E3%83%BC%E3%82%B8%E8%A8%88%E7%AE%97%E5%BC%8F">ダメージ計算式 - 崩壊スターレイル Wiki*</a></cite></p>
+</blockquote>
+</body>
+</html>
