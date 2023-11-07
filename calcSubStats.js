@@ -111,7 +111,9 @@ const STATS = [
 /* UI components */
 
 function clear(e) {
-    while (e.firstChild != null) { e.removeChild(e.firstChild); }
+    while (e.firstChild != null) {
+        e.removeChild(e.firstChild);
+    }
 }
 
 function createElementWithText(tagName, text) {
@@ -154,8 +156,8 @@ function updateValues(names, values) {
     }
 }
 
-function updateTable(names, values, table) {
-    clear(table);
+function updateCandidates(names, values, candidates) {
+    clear(candidates);
     let stat = STATS[names.selectedIndex];
     let tr = document.createElement("tr");
     tr.appendChild(createElementWithText("th", "強化"));
@@ -164,7 +166,7 @@ function updateTable(names, values, table) {
     tr.appendChild(createElementWithText("th", "med"));
     tr.appendChild(createElementWithText("th", "high"));
     tr.appendChild(createElementWithText("th", "score"));
-    table.appendChild(tr);
+    candidates.appendChild(tr);
 
     for (let candidate of stat.groups[values.selectedIndex]) {
         tr = document.createElement("tr");
@@ -175,7 +177,7 @@ function updateTable(names, values, table) {
         tr.appendChild(createElementWithText("td", candidate.combination[1]));
         tr.appendChild(createElementWithText("td", candidate.combination[2]));
         tr.appendChild(createElementWithText("td", stat.getScore(candidate)));
-        table.appendChild(tr);
+        candidates.appendChild(tr);
     }
 }
 
@@ -202,16 +204,14 @@ function updateScore(options) {
     }
 }
 
-
 function init() {
     let options = [];
     for (let i = 0; i < 4; i++) {
-        let wrapper = document.getElementById("wrapper" + i);
-        let names = wrapper.getElementsByClassName("sub-stat-names")[0];
-        let values = wrapper.getElementsByClassName("sub-stat-values")[0];
-        let table = wrapper.getElementsByClassName("sub-stat-table")[0];
-        let weight = document.getElementById("weight" + i);
-        options.push({names: names, values: values, weight: weight});
+        let names = document.getElementById("sub-stat-names" + i);
+        let values = document.getElementById("sub-stat-values" + i);
+        let candidates = document.getElementById("sub-stat-candidates" + i);
+        let weight = document.getElementById("sub-stat-weight" + i);
+        options.push({names: names, values: values});
 
         updateNames(names);
         switch (i) {
@@ -222,25 +222,25 @@ function init() {
             default:
         }
         updateValues(names, values);
-        updateTable(names, values, table);
+        updateCandidates(names, values, candidates);
         updateWeight(names, weight);
 
 
         names.addEventListener("change", () => {
             updateValues(names, values);
-            updateTable(names, values, table);
+            updateCandidates(names, values, candidates);
             updateWeight(names, weight);
             updateScore(options);
         });
 
         values.addEventListener("change", () => {
-            updateTable(names, values, table);
+            updateCandidates(names, values, candidates);
             updateScore(options);
         });
 
         weight.addEventListener("change", () => {
             STATS[names.selectedIndex].weight = weight.value;
-            updateTable(names, values, table);
+            updateCandidates(names, values, candidates);
             updateWeight(names, weight);
             updateScore(options);
         });
