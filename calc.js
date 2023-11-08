@@ -134,7 +134,7 @@ function updateNames(names) {
 }
 
 const COLORS = ["#99DDFF", "#99FFDD", "#99FF99", "#DDFF99", "#FFDD99", "#FF9999"];
-const MIXED_COLORS = ["#99EEEE", "#99FFBB", "#BBFF99", "#EEEE99", "#FFBB99"]
+const MIXED_COLORS = ["#99EEEE", "#99FFBB", "#BBFF99", "#EEEE99", "#FFBB99"];
 
 function updateValues(names, values) {
     clear(values);
@@ -202,9 +202,9 @@ function updateScore(elements) {
     min = round(min, 1);
     max = round(max, 1);
     if (min == max) {
-        document.getElementById("score").textContent = `total score: ${min}`;
+        document.getElementById("score").textContent = min;
     } else {
-        document.getElementById("score").innerHTML = `total score: ${min}&ndash;${max}`;
+        document.getElementById("score").innerHTML = `${min}&ndash;${max}`;
     }
 }
 
