@@ -37,10 +37,14 @@ class PossibleValue {
                 }
             }
         }
-        return floor(this.#calc(), maxDigits < 3 ? maxDigits : 3);
+        if (maxDigits < 3) {
+            return round(this.#calc(), maxDigits);
+        } else {
+            return floor(this.#calc(), 3);
+        }
     }
 
-    get timesToUpgrade() {
+    get upgradedTimes() {
         let [l, m, h] = this.combination;
         return l + m + h -1;
     }
@@ -141,10 +145,10 @@ function updateValues(names, values) {
     for (let group of stat.groups) {
         let op = createElementWithText("option", group[0].displayedValue);
 
-        let first = group[0].timesToUpgrade;
+        let first = group[0].upgradedTimes;
         let other = first;
         for (let i = 1; i < group.length; i++) {
-            other = group[i].timesToUpgrade;
+            other = group[i].upgradedTimes;
             if (first != other) {  break; }
         }
         if (first < other) {
@@ -173,8 +177,8 @@ function updateDetails(names, values, details) {
 
     for (let v of stat.groups[values.selectedIndex]) {
         tr = document.createElement("tr");
-        tr.style.background = COLORS[v.timesToUpgrade];
-        tr.appendChild(createElementWithText("td", "+" + v.timesToUpgrade));
+        tr.style.background = COLORS[v.upgradedTimes];
+        tr.appendChild(createElementWithText("td", "+" + v.upgradedTimes));
         tr.appendChild(createElementWithText("td", v.value));
         tr.appendChild(createElementWithText("td", v.combination[0]));
         tr.appendChild(createElementWithText("td", v.combination[1]));
