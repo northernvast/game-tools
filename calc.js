@@ -37,7 +37,7 @@ class PossibleValue {
                 }
             }
         }
-        if (maxDigits < 3) {
+        if (maxDigits <= 3) {
             return round(this.#calc(), maxDigits);
         } else {
             return floor(this.#calc(), 3);
