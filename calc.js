@@ -8,19 +8,23 @@ function round(value, digits) {
     return Math.round(value * n) / n;
 }
 
-class SubStatCandidate {
+class PossibleValue {
     #decimalPlaces;
 
-    constructor(decimalPlaces, initialValues, combination) {
-        this.#decimalPlaces = decimalPlaces;
+    constructor(initialValues, combination, decimalPlaces) {
         this.initialValues = initialValues;
         this.combination = combination;
+        this.#decimalPlaces = decimalPlaces;
     }
 
     #calc() {
         let [low, med, high] = this.initialValues;
         let [l, m, h] = this.combination;
         return low*l + med*m + high*h;
+    }
+
+    get displayedValue() {
+        return floor(this.#calc(), this.#decimalPlaces);
     }
     
     get value() {
@@ -34,10 +38,6 @@ class SubStatCandidate {
             }
         }
         return floor(this.#calc(), maxDigits < 3 ? maxDigits : 3);
-    }
-
-    get displayedVal() {
-        return floor(this.#calc(), this.#decimalPlaces);
     }
 
     get timesToUpgrade() {
@@ -63,53 +63,52 @@ let COMBINATIONS = [ // 83 combinations
 ];
 
 class SubStat {
-    constructor(name, weight, decimalPlaces, initialValues) {
+    constructor(name, initialValues, decimalPlaces, weight) {
         this.name = name;
-        this.weight = weight;
-        this.initialValues = initialValues;
-        this.candidates = [];
         this.groups = [];
+        this.weight = weight;
 
+        let possibleValues = [];
         for (let c of COMBINATIONS) {
-            this.candidates.push(new SubStatCandidate(decimalPlaces, initialValues, c));
+            possibleValues.push(new PossibleValue(initialValues, c, decimalPlaces));
         }
 
-        this.candidates.sort((a,b) => a.value - b.value);
+        possibleValues.sort((a,b) => a.value - b.value);
 
         let prev = 0;
         let group = [];
         let isFirst = true;
-        for (let c of this.candidates) {
+        for (let v of possibleValues) {
             if (isFirst) {
                 isFirst = false;
-            } else if (prev != c.displayedVal) {
+            } else if (prev != v.displayedValue) {
                 this.groups.push(group);
                 group = [];
             }
-            prev = c.displayedVal;
-            group.push(c);
+            prev = v.displayedValue;
+            group.push(v);
         }
         this.groups.push(group);
     }
 
-    getScore(candidate) {
-        return round(candidate.growth * this.weight * 10, 1);
+    getScore(v) {
+        return round(v.growth * this.weight * 10, 1);
     }
 }
 
 const DATA = [
-    new SubStat("HP", 0.60, 0, [33.87, 38.103755, 42.33751]),
-    new SubStat("攻撃力", 0.60, 0, [16.935, 19.051877, 21.168754]),
-    new SubStat("防御力", 0.60, 0, [16.935, 19.051877, 21.168754]),
-    new SubStat("速度", 1.04, 0, [2.0, 2.3, 2.6]),
-    new SubStat("HP%", 1, 1, [3.456, 3.888, 4.32]),
-    new SubStat("攻撃力%", 1, 1, [3.456, 3.888, 4.32]),
-    new SubStat("防御力%", 1, 1, [4.32, 4.86, 5.4]),
-    new SubStat("会心率", 1, 1, [2.592, 2.916, 3.24]),
-    new SubStat("会心ダメージ", 1, 1, [5.184, 5.832, 6.48]),
-    new SubStat("撃破特攻", 1, 1, [5.184, 5.832, 6.48]),
-    new SubStat("効果命中", 1, 1, [3.456, 3.888, 4.32]),
-    new SubStat("効果抵抗", 1, 1, [3.456, 3.888, 4.32])
+    new SubStat("HP", [33.87, 38.103755, 42.33751], 0, 0.60),
+    new SubStat("攻撃力", [16.935, 19.051877, 21.168754], 0, 0.60),
+    new SubStat("防御力", [16.935, 19.051877, 21.168754], 0, 0.60),
+    new SubStat("速度", [2.0, 2.3, 2.6], 0, 1.04),
+    new SubStat("HP%", [3.456, 3.888, 4.32], 1, 1),
+    new SubStat("攻撃力%", [3.456, 3.888, 4.32], 1, 1),
+    new SubStat("防御力%", [4.32, 4.86, 5.4], 1, 1),
+    new SubStat("会心率", [2.592, 2.916, 3.24], 1, 1),
+    new SubStat("会心ダメージ", [5.184, 5.832, 6.48], 1, 1),
+    new SubStat("撃破特攻", [5.184, 5.832, 6.48], 1, 1),
+    new SubStat("効果命中", [3.456, 3.888, 4.32], 1, 1),
+    new SubStat("効果抵抗", [3.456, 3.888, 4.32], 1, 1)
 ];
 
 /* UI components */
@@ -140,7 +139,7 @@ function updateValues(names, values) {
     clear(values);
     let stat = DATA[names.selectedIndex];
     for (let group of stat.groups) {
-        let op = createElementWithText("option", group[0].displayedVal);
+        let op = createElementWithText("option", group[0].displayedValue);
 
         let first = group[0].timesToUpgrade;
         let other = first;
@@ -160,8 +159,8 @@ function updateValues(names, values) {
     }
 }
 
-function updateCandidates(names, values, candidates) {
-    clear(candidates);
+function updateDetails(names, values, details) {
+    clear(details);
     let stat = DATA[names.selectedIndex];
     let tr = document.createElement("tr");
     tr.appendChild(createElementWithText("th", "強化"));
@@ -170,18 +169,18 @@ function updateCandidates(names, values, candidates) {
     tr.appendChild(createElementWithText("th", "med"));
     tr.appendChild(createElementWithText("th", "high"));
     tr.appendChild(createElementWithText("th", "score"));
-    candidates.appendChild(tr);
+    details.appendChild(tr);
 
-    for (let candidate of stat.groups[values.selectedIndex]) {
+    for (let v of stat.groups[values.selectedIndex]) {
         tr = document.createElement("tr");
-        tr.style.background = COLORS[candidate.timesToUpgrade];
-        tr.appendChild(createElementWithText("td", "+" + candidate.timesToUpgrade));
-        tr.appendChild(createElementWithText("td", candidate.value));
-        tr.appendChild(createElementWithText("td", candidate.combination[0]));
-        tr.appendChild(createElementWithText("td", candidate.combination[1]));
-        tr.appendChild(createElementWithText("td", candidate.combination[2]));
-        tr.appendChild(createElementWithText("td", stat.getScore(candidate)));
-        candidates.appendChild(tr);
+        tr.style.background = COLORS[v.timesToUpgrade];
+        tr.appendChild(createElementWithText("td", "+" + v.timesToUpgrade));
+        tr.appendChild(createElementWithText("td", v.value));
+        tr.appendChild(createElementWithText("td", v.combination[0]));
+        tr.appendChild(createElementWithText("td", v.combination[1]));
+        tr.appendChild(createElementWithText("td", v.combination[2]));
+        tr.appendChild(createElementWithText("td", stat.getScore(v)));
+        details.appendChild(tr);
     }
 }
 
@@ -213,7 +212,7 @@ function init() {
     for (let i = 0; i < 4; i++) {
         let names = document.getElementById("sub-stat-names" + i);
         let values = document.getElementById("sub-stat-values" + i);
-        let candidates = document.getElementById("sub-stat-candidates" + i);
+        let details = document.getElementById("sub-stat-details" + i);
         let weight = document.getElementById("sub-stat-weight" + i);
         elements.push({names: names, values: values});
 
@@ -226,25 +225,25 @@ function init() {
             default:
         }
         updateValues(names, values);
-        updateCandidates(names, values, candidates);
+        updateDetails(names, values, details);
         updateWeight(names, weight);
 
 
         names.addEventListener("change", () => {
             updateValues(names, values);
-            updateCandidates(names, values, candidates);
+            updateDetails(names, values, details);
             updateWeight(names, weight);
             updateScore(elements);
         });
 
         values.addEventListener("change", () => {
-            updateCandidates(names, values, candidates);
+            updateDetails(names, values, details);
             updateScore(elements);
         });
 
         weight.addEventListener("change", () => {
             DATA[names.selectedIndex].weight = weight.value;
-            updateCandidates(names, values, candidates);
+            updateDetails(names, values, details);
             updateWeight(names, weight);
             updateScore(elements);
         });
