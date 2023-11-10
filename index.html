@@ -18,63 +18,71 @@
             border-left: 1px solid #ddd;
             border-right: 1px solid #ddd;
         }
-        .box {
+        .container {
             display: flex;
+            justify-content: space-around;
         }
-        .card {
-            padding: 0px;
-            margin: 5px;
-            padding: 5px;
+        .box {
+            padding: 10px;
             width: 25%;
             text-align: center;
         }
         @media screen and (max-width: 850px) {
-            .box {
+            .container {
                 display: block;
             }
-            .card {
+            .box {
                 box-sizing: border-box;
                 width: 100%;
             }
         }
-        .card div {
-            text-align: center;
+
+        .box div:first-child {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
         }
-        .card select {
-            margin: 0px;
-            width: 60%;
-            border-radius: 4px;
+        .box select {
+            width: 66%;
+            border: 1px solid #999;
+            border-radius: 5px;
         }
-        .card select:nth-of-type(2) {
-            width: 37%;
+        .box select:last-child {
+            width: 33%;
         }
-        .card label {
+
+        .box div:last-child {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+        .box label {
             font-size: 13px;
         }
-        .card input {
+        .box input {
             width: 50%;
+            border: 1px solid #999;
+            border-radius: 5px;
         }
-        .card table {
+
+        .box table {
             width: 100%;
             margin-top: 5px;
-            margin-left: auto;
-            margin-right: auto;
             margin-bottom: 5px;
-
             border-radius: 5px;
             border-spacing: 0;
             border: none;
             border-top: 1px solid #999;
             border-left: 1px solid #999;
         }
-        .card th {
-            height: 28px;
+        .box th {
+            height: 30px;
             font-size: 13px;
         }
-        .card td {
-            height: 40px;
+        .box td {
+            height: 35px;
         }
-        .card tr>* {
+        .box tr>* {
             width: 13%;
             padding: 0px;
             text-align: center;
@@ -82,24 +90,25 @@
             border-right: 1px solid #999;
             border-bottom: 1px solid #999;
         }
-        .card tr>*:nth-child(2) {
+        .box tr>*:nth-child(2) {
             width: 20%;
         }
-        .card tr:first-child>*:first-child{
+        .box tr:first-child>*:first-child{
             border-radius: 5px 0 0 0;
         }
-        .card tr:first-child>*:last-child{
+        .box tr:first-child>*:last-child{
             border-radius: 0 5px 0 0;
         }
-        .card tr:last-child>*:first-child{
+        .box tr:last-child>*:first-child{
             border-radius: 0 0 0 5px;
         }
-        .card tr:last-child>*:last-child{
+        .box tr:last-child>*:last-child{
             border-radius: 0 0 5px 0;
         }
+
         .how-to {
             margin-top: 15px;
-            border: 1px solid #aaa;
+            border: 1px dashed #aaa;
             padding: 10px;
         }
         .how-to h5 {
@@ -117,48 +126,48 @@
 
     <h5>5★遺物サブステータス解析ツール</h5>
     <p>TOTAL SCORE: <span id="score"></span></p>
-    <div class="box">
-        <div class="card">
+    <div class="container">
+        <div class="box">
             <div>
                 <select id="sub-stat-names0"></select>
                 <select id="sub-stat-values0"></select>
             </div>
             <table id="sub-stat-details0"></table>
             <div>
-                <label for="sub-stat-weight0">重み</label>
+                <label for="sub-stat-weight0">重み：</label>
                 <input id="sub-stat-weight0" type="number" value="1" step="0.1" min="0" />
             </div>
         </div>
-        <div class="card">
+        <div class="box">
             <div>
                 <select id="sub-stat-names1"></select>
                 <select id="sub-stat-values1"></select>
             </div>
             <table id="sub-stat-details1"></table>
             <div>
-                <label for="sub-stat-weight1">重み</label>
+                <label for="sub-stat-weight1">重み：</label>
                 <input id="sub-stat-weight1" type="number" value="1" step="0.1" min="0" />
             </div>
         </div>
-        <div class="card">
+        <div class="box">
             <div>
                 <select id="sub-stat-names2"></select>
                 <select id="sub-stat-values2"></select>
             </div>
             <table id="sub-stat-details2"></table>
             <div>
-                <label for="sub-stat-weight2">重み</label>
+                <label for="sub-stat-weight2">重み：</label>
                 <input id="sub-stat-weight2" type="number" value="1" step="0.1" min="0" />
             </div>
         </div>
-        <div class="card">
+        <div class="box">
             <div>
                 <select id="sub-stat-names3"></select>
                 <select id="sub-stat-values3"></select>
             </div>
             <table id="sub-stat-details3"></table>
             <div>
-                <label for="sub-stat-weight3">重み</label>
+                <label for="sub-stat-weight3">重み：</label>
                 <input id="sub-stat-weight3" type="number" value="1" step="0.1" min="0" />
             </div>
         </div>
