@@ -3,6 +3,15 @@ function round(value, digits) {
     return Math.round(value * n) / n;
 }
 
+function format(value, digits) {
+    if (digits == 0) {
+        return Math.floor(value).toString();
+    }
+    let s = Math.floor(value * Math.pow(10, digits)).toString();
+    let p = s.length - digits;
+    return s.slice(0, p) + "." + s.slice(p);
+}
+
 class PossibleValue {
     #decimalPlaces;
 
@@ -23,11 +32,11 @@ class PossibleValue {
         return this.#calc(3);
     }
 
-    get displayedValue() {
-        return this.#calc(this.#decimalPlaces);
+    get displayValue() {
+        return format(this.value, this.#decimalPlaces);
     }
 
-    get upgradedTimes() {
+    get upgrade() {
         let [l, m, h] = this.combination;
         return l + m + h -1;
     }
@@ -68,11 +77,11 @@ class SubStat {
         for (let v of possibleValues) {
             if (isFirst) {
                 isFirst = false;
-            } else if (prev != v.displayedValue) {
+            } else if (prev != v.displayValue) {
                 this.groups.push(group);
                 group = [];
             }
-            prev = v.displayedValue;
+            prev = v.displayValue;
             group.push(v);
         }
         this.groups.push(group);
@@ -126,12 +135,12 @@ function updateValues(names, values) {
     clear(values);
     let stat = DATA[names.selectedIndex];
     for (let group of stat.groups) {
-        let op = createElementWithText("option", group[0].displayedValue);
+        let op = createElementWithText("option", group[0].displayValue);
 
-        let first = group[0].upgradedTimes;
+        let first = group[0].upgrade;
         let other = first;
         for (let i = 1; i < group.length; i++) {
-            other = group[i].upgradedTimes;
+            other = group[i].upgrade;
             if (first != other) {  break; }
         }
         if (first < other) {
@@ -160,8 +169,8 @@ function updateDetails(names, values, details) {
 
     for (let v of stat.groups[values.selectedIndex]) {
         tr = document.createElement("tr");
-        tr.style.background = COLORS[v.upgradedTimes];
-        tr.appendChild(createElementWithText("td", "+" + v.upgradedTimes));
+        tr.style.background = COLORS[v.upgrade];
+        tr.appendChild(createElementWithText("td", "+" + v.upgrade));
         tr.appendChild(createElementWithText("td", v.value));
         tr.appendChild(createElementWithText("td", v.combination[0]));
         tr.appendChild(createElementWithText("td", v.combination[1]));
