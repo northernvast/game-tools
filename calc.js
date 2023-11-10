@@ -129,8 +129,11 @@ function updateNames(names) {
     }
 }
 
-const COLORS = ["#99DDFF", "#99FFDD", "#99FF99", "#DDFF99", "#FFDD99", "#FF9999"];
-const MIXED_COLORS = ["#99EEEE", "#99FFBB", "#BBFF99", "#EEEE99", "#FFBB99"];
+// Very pale tone
+const COLORS = ["#FBDAC8","#FEECD2","#FFFCDB","#D4ECEA","#D3DEF1","#D2CCE6"];
+
+// const COLORS = ["#99DDFF", "#99FFDD", "#99FF99", "#DDFF99", "#FFDD99", "#FF9999"];
+// const MIXED_COLORS = ["#99EEEE", "#99FFBB", "#BBFF99", "#EEEE99", "#FFBB99"];
 
 function updateValues(names, values) {
     clear(values);
@@ -138,19 +141,20 @@ function updateValues(names, values) {
     for (let group of stat.groups) {
         let op = createElementWithText("option", group[0].displayValue);
 
-        let first = group[0].upgrade;
-        let other = first;
-        for (let i = 1; i < group.length; i++) {
-            other = group[i].upgrade;
-            if (first != other) {  break; }
-        }
-        if (first < other) {
-            op.style.background = MIXED_COLORS[first];
-        } else if (first == other) {
-            op.style.background = COLORS[first];
-        } else {
-            op.style.background = MIXED_COLORS[other]
-        }
+        // let first = group[0].upgrade;
+        // let other = first;
+        // for (let i = 1; i < group.length; i++) {
+        //     other = group[i].upgrade;
+        //     if (first != other) {  break; }
+        // }
+        // if (first < other) {
+        //     op.style.background = MIXED_COLORS[first];
+        // } else if (first == other) {
+        //     op.style.background = COLORS[first];
+        // } else {
+        //     op.style.background = MIXED_COLORS[other]
+        // }
+        op.style.background = COLORS[group[0].upgrade];
 
         values.appendChild(op);
     }
