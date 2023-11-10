@@ -75,7 +75,7 @@ class SubStat {
         let group = [];
         let isFirst = true;
         for (let v of possibleValues) {
-            let crnt = v.displayedValue;
+            let crnt = v.displayValue;
             if (isFirst) {
                 isFirst = false;
             } else if (crnt != prev) {
