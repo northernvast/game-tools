@@ -33,7 +33,7 @@ class PossibleValue {
     }
 
     get displayValue() {
-        return format(this.value, this.#decimalPlaces);
+        return format(this.value, this.#decimalPlaces); // String
     }
 
     get upgrade() {
@@ -71,23 +71,24 @@ class SubStat {
 
         possibleValues.sort((a,b) => a.value - b.value);
 
-        let prev = 0;
+        let prev = "";
         let group = [];
         let isFirst = true;
         for (let v of possibleValues) {
+            let crnt = v.displayedValue;
             if (isFirst) {
                 isFirst = false;
-            } else if (prev != v.displayValue) {
+            } else if (crnt != prev) {
                 this.groups.push(group);
                 group = [];
             }
-            prev = v.displayValue;
             group.push(v);
+            prev = crnt;
         }
         this.groups.push(group);
     }
 
-    getScore(v) {
+    calcScore(v) {
         return round(v.growth * this.weight * 10, 1);
     }
 }
@@ -175,7 +176,7 @@ function updateDetails(names, values, details) {
         tr.appendChild(createElementWithText("td", v.combination[0]));
         tr.appendChild(createElementWithText("td", v.combination[1]));
         tr.appendChild(createElementWithText("td", v.combination[2]));
-        tr.appendChild(createElementWithText("td", stat.getScore(v)));
+        tr.appendChild(createElementWithText("td", stat.calcScore(v)));
         details.appendChild(tr);
     }
 }
@@ -191,8 +192,8 @@ function updateScore(elements) {
         let stat = DATA[o.names.selectedIndex];
         let group = stat.groups[o.values.selectedIndex];
 
-        min += stat.getScore(group[0]);
-        max += stat.getScore(group[group.length -1]);
+        min += stat.calcScore(group[0]);
+        max += stat.calcScore(group[group.length -1]);
     }
     min = round(min, 1);
     max = round(max, 1);
