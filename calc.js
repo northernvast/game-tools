@@ -1,8 +1,3 @@
-function floor(value, digits) {
-    let n = Math.pow(10, digits);
-    return Math.floor(value * n) / n;
-}
-
 function round(value, digits) {
     let n = Math.pow(10, digits);
     return Math.round(value * n) / n;
@@ -17,31 +12,19 @@ class PossibleValue {
         this.#decimalPlaces = decimalPlaces;
     }
 
-    #calc() {
+    #calc(digits) {
         let [low, med, high] = this.initialValues;
         let [l, m, h] = this.combination;
-        return low*l + med*m + high*h;
+        let n = Math.pow(10, digits);
+        return Math.floor(n*low*l + n*med*m + n*high*h) / n;
+    }
+
+    get value() {
+        return this.#calc(3);
     }
 
     get displayedValue() {
-        return floor(this.#calc(), this.#decimalPlaces);
-    }
-    
-    get value() {
-        let maxDigits = 0;
-        for (let i = 0; i < 3; i++) {
-            if (this.combination[i] > 0) {
-                let decimalPart = this.initialValues[i].toString().split(".")[1];
-                if (decimalPart != undefined && maxDigits < decimalPart.length) {
-                    maxDigits = decimalPart.length;
-                }
-            }
-        }
-        if (maxDigits <= 3) {
-            return round(this.#calc(), maxDigits);
-        } else {
-            return floor(this.#calc(), 3);
-        }
+        return this.#calc(this.#decimalPlaces);
     }
 
     get upgradedTimes() {
@@ -50,7 +33,7 @@ class PossibleValue {
     }
 
     get growth() {
-        return this.#calc() / this.initialValues[2];
+        return this.value / this.initialValues[2];
     }
 }
 
