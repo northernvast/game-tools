@@ -5,6 +5,11 @@
     <title>崩壊スターレイル 遺物解析ツール</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
+        h2 {
+            font-size: 15px;
+            font-weight: bold;
+        }
+
         body {
             margin: 0px;
             font-family: arial, sans-serif;
@@ -14,7 +19,7 @@
             margin-right: auto;
             padding: 10px;
             min-height: 100vh;
-            max-width: 1200px;
+            max-width: 1000px;
             border-left: 1px solid #ddd;
             border-right: 1px solid #ddd;
         }
@@ -27,7 +32,16 @@
             width: 25%;
             text-align: center;
         }
-        @media screen and (max-width: 850px) {
+        @media screen and (max-width: 900px) and (min-width: 600px) {
+            .container {
+                flex-wrap: wrap;
+            }
+            .box {
+                box-sizing: border-box;
+                width: 50%;
+            }
+        }
+        @media screen and (max-width: 600px) {
             .container {
                 display: block;
             }
@@ -37,7 +51,7 @@
             }
         }
 
-        .box div:first-child {
+        .box div:first-of-type {
             width: 100%;
             display: flex;
             justify-content: space-between;
@@ -51,7 +65,7 @@
             width: 33%;
         }
 
-        .box div:last-child {
+        .box div:last-of-type {
             width: 100%;
             display: flex;
             justify-content: center;
@@ -122,15 +136,14 @@
 <body>
 
 <div class="wrapper">
-    <h1>Honkai: Star Rail</h1>
 
-    <h5>5★遺物サブステータス解析ツール</h5>
+    <h2>5★遺物サブステータス解析ツール</h2>
     <p>TOTAL SCORE: <span id="score"></span></p>
     <div class="container">
         <div class="box">
             <div>
                 <select id="sub-stat-names0"></select>
-                <select id="sub-stat-values0"></select>
+                <select id="sub-stat-display-values0"></select>
             </div>
             <table id="sub-stat-details0"></table>
             <div>
@@ -141,7 +154,7 @@
         <div class="box">
             <div>
                 <select id="sub-stat-names1"></select>
-                <select id="sub-stat-values1"></select>
+                <select id="sub-stat-display-values1"></select>
             </div>
             <table id="sub-stat-details1"></table>
             <div>
@@ -152,7 +165,7 @@
         <div class="box">
             <div>
                 <select id="sub-stat-names2"></select>
-                <select id="sub-stat-values2"></select>
+                <select id="sub-stat-display-values2"></select>
             </div>
             <table id="sub-stat-details2"></table>
             <div>
@@ -163,7 +176,7 @@
         <div class="box">
             <div>
                 <select id="sub-stat-names3"></select>
-                <select id="sub-stat-values3"></select>
+                <select id="sub-stat-display-values3"></select>
             </div>
             <table id="sub-stat-details3"></table>
             <div>
