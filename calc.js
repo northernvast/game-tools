@@ -21,6 +21,7 @@ class PossibleValue {
         this.#decimalPlaces = decimalPlaces;
     }
 
+    // not accurate
     #calc(digits) {
         let [low, med, high] = this.initialValues;
         let [l, m, h] = this.combination;
@@ -36,12 +37,12 @@ class PossibleValue {
         return format(this.value, this.#decimalPlaces); // String
     }
 
-    get upgrade() {
+    get timesUpgrade() {
         let [l, m, h] = this.combination;
         return l + m + h -1;
     }
 
-    get growth() {
+    get rate() {
         return this.value / this.initialValues[2];
     }
 }
@@ -61,20 +62,20 @@ let COMBINATIONS = [ // 83 combinations
 class SubStat {
     constructor(name, initialValues, decimalPlaces, weight) {
         this.name = name;
+        this.values = new Array(83);
         this.groups = [];
         this.weight = weight;
 
-        let possibleValues = [];
-        for (let c of COMBINATIONS) {
-            possibleValues.push(new PossibleValue(initialValues, c, decimalPlaces));
+        for (let i = 0; i < COMBINATIONS.length; i++) {
+            this.values[i] = new PossibleValue(initialValues, COMBINATIONS[i], decimalPlaces);
         }
 
-        possibleValues.sort((a,b) => a.value - b.value);
+        this.values.sort((a,b) => a.value - b.value);
 
         let prev = "";
         let group = [];
         let isFirst = true;
-        for (let v of possibleValues) {
+        for (let v of this.values) {
             let crnt = v.displayValue;
             if (isFirst) {
                 isFirst = false;
@@ -89,7 +90,7 @@ class SubStat {
     }
 
     calcScore(v) {
-        return round(v.growth * this.weight * 10, 1);
+        return round(v.rate * this.weight * 10, 1);
     }
 }
 
@@ -110,6 +111,23 @@ const DATA = [
 
 /* UI components */
 
+// Very pale tone
+const COLORS = ["#FBDAC8","#FEECD2","#FFFCDB","#D4ECEA","#D3DEF1","#D2CCE6"];
+
+const NAMES_ELEMENTS = [];
+const DISPLAY_VALUES_ELEMENTS = [];
+const DETAILS_ELEMENTS = [];
+const WEIGHT_ELEMENTS = [];
+
+for (let i = 0; i < 4; i++) {
+    NAMES_ELEMENTS[i] = document.getElementById("sub-stat-names" + i);
+    DISPLAY_VALUES_ELEMENTS[i] = document.getElementById("sub-stat-display-values" + i);
+    DETAILS_ELEMENTS[i] = document.getElementById("sub-stat-details" + i);
+    WEIGHT_ELEMENTS[i] = document.getElementById("sub-stat-weight" + i);
+}
+
+const SCORE_ELEMENT = document.getElementById("score");
+
 function clear(e) {
     while (e.firstChild != null) {
         e.removeChild(e.firstChild);
@@ -122,47 +140,26 @@ function createElementWithText(tagName, text) {
     return e;
 }
 
-function updateNames(names) {
-    clear(names);
+function updateNamesElement(index) {
+    clear(NAMES_ELEMENTS[index]);
     for (let stat of DATA) {
-        names.appendChild(createElementWithText("option", stat.name));
+        NAMES_ELEMENTS[index].appendChild(createElementWithText("option", stat.name));
     }
 }
 
-// Very pale tone
-const COLORS = ["#FBDAC8","#FEECD2","#FFFCDB","#D4ECEA","#D3DEF1","#D2CCE6"];
-
-// const COLORS = ["#99DDFF", "#99FFDD", "#99FF99", "#DDFF99", "#FFDD99", "#FF9999"];
-// const MIXED_COLORS = ["#99EEEE", "#99FFBB", "#BBFF99", "#EEEE99", "#FFBB99"];
-
-function updateValues(names, values) {
-    clear(values);
-    let stat = DATA[names.selectedIndex];
+function updateDisplayValuesElement(index) {
+    clear(DISPLAY_VALUES_ELEMENTS[index]);
+    let stat = DATA[NAMES_ELEMENTS[index].selectedIndex];
     for (let group of stat.groups) {
         let op = createElementWithText("option", group[0].displayValue);
-
-        // let first = group[0].upgrade;
-        // let other = first;
-        // for (let i = 1; i < group.length; i++) {
-        //     other = group[i].upgrade;
-        //     if (first != other) {  break; }
-        // }
-        // if (first < other) {
-        //     op.style.background = MIXED_COLORS[first];
-        // } else if (first == other) {
-        //     op.style.background = COLORS[first];
-        // } else {
-        //     op.style.background = MIXED_COLORS[other]
-        // }
-        op.style.background = COLORS[group[0].upgrade];
-
-        values.appendChild(op);
+        op.style.background = COLORS[group[0].timesUpgrade];
+        DISPLAY_VALUES_ELEMENTS[index].appendChild(op);
     }
 }
 
-function updateDetails(names, values, details) {
-    clear(details);
-    let stat = DATA[names.selectedIndex];
+function updateDetailsElement(index) {
+    clear(DETAILS_ELEMENTS[index]);
+    let stat = DATA[NAMES_ELEMENTS[index].selectedIndex];
     let tr = document.createElement("tr");
     tr.appendChild(createElementWithText("th", "強化"));
     tr.appendChild(createElementWithText("th", "近似値"));
@@ -170,86 +167,74 @@ function updateDetails(names, values, details) {
     tr.appendChild(createElementWithText("th", "med"));
     tr.appendChild(createElementWithText("th", "high"));
     tr.appendChild(createElementWithText("th", "score"));
-    details.appendChild(tr);
+    DETAILS_ELEMENTS[index].appendChild(tr);
 
-    for (let v of stat.groups[values.selectedIndex]) {
+    for (let v of stat.groups[DISPLAY_VALUES_ELEMENTS[index].selectedIndex]) {
         tr = document.createElement("tr");
-        tr.style.background = COLORS[v.upgrade];
-        tr.appendChild(createElementWithText("td", "+" + v.upgrade));
+        tr.style.background = COLORS[v.timesUpgrade];
+        tr.appendChild(createElementWithText("td", "+" + v.timesUpgrade));
         tr.appendChild(createElementWithText("td", v.value));
         tr.appendChild(createElementWithText("td", v.combination[0]));
         tr.appendChild(createElementWithText("td", v.combination[1]));
         tr.appendChild(createElementWithText("td", v.combination[2]));
         tr.appendChild(createElementWithText("td", stat.calcScore(v)));
-        details.appendChild(tr);
+        DETAILS_ELEMENTS[index].appendChild(tr);
     }
 }
 
-function updateWeight(names, weight) {
-    weight.value = DATA[names.selectedIndex].weight;
+function updateWeightElement(index) {
+    WEIGHT_ELEMENTS[index].value = DATA[NAMES_ELEMENTS[index].selectedIndex].weight;
 }
 
-function updateScore(elements) {
+function updateScoreElement() {
     let min = 0;
     let max = 0;
-    for (let o of elements) {
-        let stat = DATA[o.names.selectedIndex];
-        let group = stat.groups[o.values.selectedIndex];
-
+    for (let i = 0; i < 4; i++) {
+        let stat = DATA[NAMES_ELEMENTS[i].selectedIndex];
+        let group = stat.groups[DISPLAY_VALUES_ELEMENTS[i].selectedIndex];
         min += stat.calcScore(group[0]);
         max += stat.calcScore(group[group.length -1]);
     }
     min = round(min, 1);
     max = round(max, 1);
     if (min == max) {
-        document.getElementById("score").textContent = min;
+        SCORE_ELEMENT.textContent = min;
     } else {
-        document.getElementById("score").innerHTML = `${min}&ndash;${max}`;
+        SCORE_ELEMENT.innerHTML = `${min}&ndash;${max}`;
     }
 }
 
 function init() {
-    let elements = [];
     for (let i = 0; i < 4; i++) {
-        let names = document.getElementById("sub-stat-names" + i);
-        let values = document.getElementById("sub-stat-values" + i);
-        let details = document.getElementById("sub-stat-details" + i);
-        let weight = document.getElementById("sub-stat-weight" + i);
-        elements.push({names: names, values: values});
-
-        updateNames(names);
+        updateNamesElement(i);
         switch (i) {
-            case 0: names.selectedIndex = 1; break;
-            case 1: names.selectedIndex = 5; break;
-            case 2: names.selectedIndex = 7; break;
-            case 3: names.selectedIndex = 8; break;
+            case 0: NAMES_ELEMENTS[i].selectedIndex = 1; break;
+            case 1: NAMES_ELEMENTS[i].selectedIndex = 5; break;
+            case 2: NAMES_ELEMENTS[i].selectedIndex = 7; break;
+            case 3: NAMES_ELEMENTS[i].selectedIndex = 8; break;
             default:
         }
-        updateValues(names, values);
-        updateDetails(names, values, details);
-        updateWeight(names, weight);
-
-
-        names.addEventListener("change", () => {
-            updateValues(names, values);
-            updateDetails(names, values, details);
-            updateWeight(names, weight);
-            updateScore(elements);
+        updateDisplayValuesElement(i);
+        updateDetailsElement(i);
+        updateWeightElement(i);
+        NAMES_ELEMENTS[i].addEventListener("change", () => {
+            updateDisplayValuesElement(i);
+            updateDetailsElement(i);
+            updateWeightElement(i);
+            updateScoreElement();
         });
-
-        values.addEventListener("change", () => {
-            updateDetails(names, values, details);
-            updateScore(elements);
+        DISPLAY_VALUES_ELEMENTS[i].addEventListener("change", () => {
+            updateDetailsElement(i);
+            updateScoreElement();
         });
-
-        weight.addEventListener("change", () => {
-            DATA[names.selectedIndex].weight = weight.value;
-            updateDetails(names, values, details);
-            updateWeight(names, weight);
-            updateScore(elements);
+        WEIGHT_ELEMENTS[i].addEventListener("change", () => {
+            DATA[NAMES_ELEMENTS[i].selectedIndex].weight = WEIGHT_ELEMENTS[i].value;
+            updateDetailsElement(i);
+            updateWeightElement(i);
+            updateScoreElement();
         });
     }
-    updateScore(elements);
+    updateScoreElement();
 }
 
 init();
