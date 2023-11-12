@@ -2,12 +2,24 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>崩壊スターレイル 遺物解析ツール</title>
+    <title>崩壊スターレイル 遺物サブステータス解析ツール</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
+        header {
+            background-color: #D7E7AF;
+            width: 100%;
+            border-top: 1px solid #ddd;
+            border-bottom: 1px solid #ddd;
+            margin: 0px;
+            text-align: center;
+        }
         h2 {
+            color: #444;
             font-size: 15px;
             font-weight: bold;
+        }
+        .score {
+            margin-left: 15px;
         }
 
         body {
@@ -17,7 +29,6 @@
         .wrapper {
             margin-left: auto;
             margin-right: auto;
-            padding: 10px;
             min-height: 100vh;
             max-width: 1000px;
             border-left: 1px solid #ddd;
@@ -121,8 +132,8 @@
         }
 
         .how-to {
-            margin-top: 15px;
-            border: 1px dashed #aaa;
+            margin: 15px;
+            border: 5px dotted #F5B2B2;
             padding: 10px;
         }
         .how-to h5 {
@@ -136,9 +147,11 @@
 <body>
 
 <div class="wrapper">
+    <header>
+        <h2>5★遺物サブステータス解析ツール</h2>
+    </header>
 
-    <h2>5★遺物サブステータス解析ツール</h2>
-    <p>TOTAL SCORE: <span id="score"></span></p>
+    <p class="score">TOTAL SCORE：<span id="score"></span></p>
     <div class="container">
         <div class="box">
             <div>
