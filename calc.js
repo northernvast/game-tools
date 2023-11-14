@@ -157,7 +157,7 @@ class SubStatOption {
 
         this.weight.addEventListener("change", () => {
             data[this.names.selectedIndex].weight = this.weight.value;
-            this.updateDetails(i);
+            this.updateDetails();
             updateScore();
         });
 
