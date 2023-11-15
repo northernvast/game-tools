@@ -31,7 +31,7 @@ header {
     margin: 0px;
     text-align: center;
 }
-h2 {
+h1 {
     color: #444;
     font-size: 15px;
     font-weight: bold;
@@ -63,17 +63,14 @@ h2 {
     display: flex;
     justify-content: space-between;
 }
-.sub-stat select {
+.sub-stat-names, .sub-stat-display-values {
     border: 1px solid var(--border-color);
     border-radius: 5px;
 }
 .sub-stat-names { width: 66%; }
 .sub-stat-display-values { width: 33%; }
 
-.sub-stat label {
-    width: 50%;
-    font-size: 13px;
-}
+.sub-stat label { font-size: 13px; }
 .sub-stat-weight {
     width: 50%;
     border: 1px solid var(--border-color);
@@ -133,7 +130,7 @@ h2 {
 
 <div class="wrapper">
     <header>
-        <h2>5★遺物サブステータス解析ツール</h2>
+        <h1>5★遺物サブステータス解析ツール</h1>
     </header>
 
     <p class="score">TOTAL SCORE：<span id="score"></span></p>
