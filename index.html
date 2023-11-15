@@ -5,143 +5,128 @@
     <title>崩壊スターレイル 遺物サブステータス解析ツール</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        header {
-            background-color: #D7E7AF;
-            width: 100%;
-            border-top: 1px solid #ddd;
-            border-bottom: 1px solid #ddd;
-            margin: 0px;
-            text-align: center;
-        }
-        h2 {
-            color: #444;
-            font-size: 15px;
-            font-weight: bold;
-        }
-        .score {
-            margin-left: 15px;
-        }
+* { box-sizing: border-box; }
+:root {
+    --bg-color: #f2f2f2;
+    --border-color: #aaa;
+}
+body {
+    margin: 0px;
+    font-family: arial, sans-serif;
+}
+.wrapper {
+    margin-left: auto;
+    margin-right: auto;
+    min-height: 100vh;
+    max-width: 1100px;
+    border-left: 1px solid var(--border-color);
+    border-right: 1px solid var(--border-color);
+}
 
-        body {
-            margin: 0px;
-            font-family: arial, sans-serif;
-        }
-        .wrapper {
-            margin-left: auto;
-            margin-right: auto;
-            min-height: 100vh;
-            max-width: 1000px;
-            border-left: 1px solid #ddd;
-            border-right: 1px solid #ddd;
-        }
-        .container {
-            display: flex;
-            justify-content: space-around;
-        }
-        .box {
-            padding: 10px;
-            width: 25%;
-            text-align: center;
-        }
-        @media screen and (max-width: 900px) and (min-width: 600px) {
-            .container {
-                flex-wrap: wrap;
-            }
-            .box {
-                box-sizing: border-box;
-                width: 50%;
-            }
-        }
-        @media screen and (max-width: 600px) {
-            .container {
-                display: block;
-            }
-            .box {
-                box-sizing: border-box;
-                width: 100%;
-            }
-        }
+header {
+    background-color: #D7E7AF;
+    width: 100%;
+    border-top: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border-color);
+    margin: 0px;
+    text-align: center;
+}
+h2 {
+    color: #444;
+    font-size: 15px;
+    font-weight: bold;
+}
 
-        .box div:first-of-type {
-            width: 100%;
-            display: flex;
-            justify-content: space-between;
-        }
-        .box select {
-            width: 66%;
-            border: 1px solid #999;
-            border-radius: 5px;
-        }
-        .box select:last-child {
-            width: 33%;
-        }
+.score { margin-left: 15px; }
 
-        .box div:last-of-type {
-            width: 100%;
-            display: flex;
-            justify-content: center;
-        }
-        .box label {
-            font-size: 13px;
-        }
-        .box input {
-            width: 50%;
-            border: 1px solid #999;
-            border-radius: 5px;
-        }
+.container {
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+}
+.sub-stat {
+    width: 25%;
+    padding: 10px;
+    text-align: center;
+}
+@media screen and (max-width: 900px) and (min-width: 600px) {
+    .container { flex-wrap: wrap; }
+    .sub-stat { width: 50%; }
+}
+@media screen and (max-width: 600px) {
+    .container { display: block; }
+    .sub-stat { width: 100%; }
+}
 
-        .box table {
-            width: 100%;
-            margin-top: 5px;
-            margin-bottom: 5px;
-            border-radius: 5px;
-            border-spacing: 0;
-            border: none;
-            border-top: 1px solid #999;
-            border-left: 1px solid #999;
-        }
-        .box th {
-            height: 30px;
-            font-size: 13px;
-        }
-        .box td {
-            height: 35px;
-        }
-        .box tr>* {
-            width: 13%;
-            padding: 0px;
-            text-align: center;
-            border: none;
-            border-right: 1px solid #999;
-            border-bottom: 1px solid #999;
-        }
-        .box tr>*:nth-child(2) {
-            width: 20%;
-        }
-        .box tr:first-child>*:first-child{
-            border-radius: 5px 0 0 0;
-        }
-        .box tr:first-child>*:last-child{
-            border-radius: 0 5px 0 0;
-        }
-        .box tr:last-child>*:first-child{
-            border-radius: 0 0 0 5px;
-        }
-        .box tr:last-child>*:last-child{
-            border-radius: 0 0 5px 0;
-        }
+.sub-stat div {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+}
+.sub-stat select {
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+}
+.sub-stat-names { width: 66%; }
+.sub-stat-display-values { width: 33%; }
 
-        .how-to {
-            margin: 15px;
-            border: 5px dotted #F5B2B2;
-            padding: 10px;
-        }
-        .how-to h5 {
-            margin: 0px;
-        }
-        .how-to p {
-            font-size: 13.5px;
-        }
+.sub-stat label {
+    width: 50%;
+    font-size: 13px;
+}
+.sub-stat-weight {
+    width: 50%;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+}
+
+.sub-stat-details {
+    width: 100%;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    border-radius: 5px;
+    border-spacing: 0;
+    border: none;
+    border-top: 1px solid var(--border-color);
+    border-left: 1px solid var(--border-color);
+}
+.sub-stat-details th {
+    height: 30px;
+    font-size: 13px;
+}
+.sub-stat-details td {
+    height: 35px;
+}
+.sub-stat-details tr:nth-child(even) {
+    background-color: var(--bg-color)
+}
+.sub-stat-details tr>* { width: 13.333%; }
+.sub-stat-details tr>*:first-child { width: 15% }
+.sub-stat-details tr>*:last-child { width: 15% }
+.sub-stat-details tr>*:nth-child(2) { width: 30%; }
+.sub-stat-details tr>* {
+    padding: 0px;
+    text-align: center;
+    border: none;
+    border-right: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border-color);
+}
+.sub-stat-details tr:first-child th:first-child { border-radius: 5px 0 0 0; }
+.sub-stat-details tr:first-child th:last-child { border-radius: 0 5px 0 0; }
+.sub-stat-details tr:last-child td:first-child { border-radius: 0 0 0 5px; }
+.sub-stat-details tr:last-child td:last-child { border-radius: 0 0 5px 0; }
+
+.how-to {
+    margin: 15px;
+    border: 5px dotted #F5B2B2;
+    padding: 10px;
+}
+.how-to h5 {
+    margin: 0px;
+}
+.how-to p {
+    font-size: 13.5px;
+}
     </style>
 </head>
 <body>
@@ -153,49 +138,37 @@
 
     <p class="score">TOTAL SCORE：<span id="score"></span></p>
     <div class="container">
-        <div class="box">
+        <div class="sub-stat">
             <div>
-                <select id="sub-stat-names0"></select>
-                <select id="sub-stat-display-values0"></select>
+                <select class="sub-stat-names"></select>
+                <select class="sub-stat-display-values"></select>
             </div>
-            <table id="sub-stat-details0"></table>
-            <div>
-                <label for="sub-stat-weight0">重み：</label>
-                <input id="sub-stat-weight0" type="number" value="1" step="0.1" min="0" />
-            </div>
+            <table class="sub-stat-details"></table>
+            <label>重み：<input class="sub-stat-weight" type="number" value="1" step="0.1" min="0" /></label>
         </div>
-        <div class="box">
+        <div class="sub-stat">
             <div>
-                <select id="sub-stat-names1"></select>
-                <select id="sub-stat-display-values1"></select>
+                <select class="sub-stat-names"></select>
+                <select class="sub-stat-display-values"></select>
             </div>
-            <table id="sub-stat-details1"></table>
-            <div>
-                <label for="sub-stat-weight1">重み：</label>
-                <input id="sub-stat-weight1" type="number" value="1" step="0.1" min="0" />
-            </div>
+            <table class="sub-stat-details"></table>
+            <label>重み：<input class="sub-stat-weight" type="number" value="1" step="0.1" min="0" /></label>
         </div>
-        <div class="box">
+        <div class="sub-stat">
             <div>
-                <select id="sub-stat-names2"></select>
-                <select id="sub-stat-display-values2"></select>
+                <select class="sub-stat-names"></select>
+                <select class="sub-stat-display-values"></select>
             </div>
-            <table id="sub-stat-details2"></table>
-            <div>
-                <label for="sub-stat-weight2">重み：</label>
-                <input id="sub-stat-weight2" type="number" value="1" step="0.1" min="0" />
-            </div>
+            <table class="sub-stat-details"></table>
+            <label>重み：<input class="sub-stat-weight" type="number" value="1" step="0.1" min="0" /></label>
         </div>
-        <div class="box">
+        <div class="sub-stat">
             <div>
-                <select id="sub-stat-names3"></select>
-                <select id="sub-stat-display-values3"></select>
+                <select class="sub-stat-names"></select>
+                <select class="sub-stat-display-values"></select>
             </div>
-            <table id="sub-stat-details3"></table>
-            <div>
-                <label for="sub-stat-weight3">重み：</label>
-                <input id="sub-stat-weight3" type="number" value="1" step="0.1" min="0" />
-            </div>
+            <table class="sub-stat-details"></table>
+            <label>重み：<input class="sub-stat-weight" type="number" value="1" step="0.1" min="0" /></label>
         </div>
     </div>
 
