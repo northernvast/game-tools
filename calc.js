@@ -1,237 +1,194 @@
-function round(value, digits) {
-    let n = Math.pow(10, digits);
-    return Math.round(value * n) / n;
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>崩壊スターレイル 遺物サブステータス解析ツール</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+* { box-sizing: border-box; }
+:root {
+    --bg-color: #f2f2f2;
+    --border-color: #aaa;
+}
+body {
+    margin: 0px;
+    font-family: arial, sans-serif;
+}
+.wrapper {
+    margin-left: auto;
+    margin-right: auto;
+    min-height: 100vh;
+    max-width: 1100px;
+    border-left: 1px solid var(--border-color);
+    border-right: 1px solid var(--border-color);
 }
 
-function format(value, digits) {
-    if (digits == 0) {
-        return Math.floor(value).toString();
-    }
-    let s = Math.floor(value * Math.pow(10, digits)).toString();
-    let p = s.length - digits;
-    return s.slice(0, p) + "." + s.slice(p);
+header {
+    background-color: #D7E7AF;
+    width: 100%;
+    border-top: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border-color);
+    margin: 0px;
+    text-align: center;
+}
+h2 {
+    color: #444;
+    font-size: 15px;
+    font-weight: bold;
 }
 
-class PossibleValue {
-    #decimalPlaces;
+.score { margin-left: 15px; }
 
-    constructor(initialValues, combination, decimalPlaces) {
-        this.initialValues = initialValues;
-        this.combination = combination;
-        this.#decimalPlaces = decimalPlaces;
-    }
-
-    // not accurate
-    #calc(digits) {
-        let [low, med, high] = this.initialValues;
-        let [l, m, h] = this.combination;
-        let n = Math.pow(10, digits);
-        return Math.floor(n*low*l + n*med*m + n*high*h) / n;
-    }
-
-    get value() {
-        return this.#calc(3);
-    }
-
-    get displayValue() {
-        return format(this.value, this.#decimalPlaces); // String
-    }
-
-    get timesUpgrade() {
-        let [l, m, h] = this.combination;
-        return l + m + h -1;
-    }
-
-    get rate() {
-        return this.value / this.initialValues[2];
-    }
+.container {
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+}
+.sub-stat {
+    width: 25%;
+    padding: 10px;
+    text-align: center;
+}
+@media screen and (max-width: 900px) and (min-width: 600px) {
+    .container { flex-wrap: wrap; }
+    .sub-stat { width: 50%; }
+}
+@media screen and (max-width: 600px) {
+    .container { display: block; }
+    .sub-stat { width: 100%; }
 }
 
-let COMBINATIONS = [ // 83 combinations
-    [1,0,0],[0,1,0],[0,0,1],[2,0,0],[1,1,0],[1,0,1],[0,2,0],[0,1,1],[0,0,2],[3,0,0],
-    [2,1,0],[2,0,1],[1,2,0],[1,1,1],[1,0,2],[0,3,0],[0,2,1],[0,1,2],[0,0,3],[4,0,0],
-    [3,1,0],[3,0,1],[2,2,0],[2,1,1],[2,0,2],[1,3,0],[1,2,1],[1,1,2],[1,0,3],[0,4,0],
-    [0,3,1],[0,2,2],[0,1,3],[0,0,4],[5,0,0],[4,1,0],[4,0,1],[3,2,0],[3,1,1],[3,0,2],
-    [2,3,0],[2,2,1],[2,1,2],[2,0,3],[1,4,0],[1,3,1],[1,2,2],[1,1,3],[1,0,4],[0,5,0],
-    [0,4,1],[0,3,2],[0,2,3],[0,1,4],[0,0,5],[6,0,0],[5,1,0],[5,0,1],[4,2,0],[4,1,1],
-    [4,0,2],[3,3,0],[3,2,1],[3,1,2],[3,0,3],[2,4,0],[2,3,1],[2,2,2],[2,1,3],[2,0,4],
-    [1,5,0],[1,4,1],[1,3,2],[1,2,3],[1,1,4],[1,0,5],[0,6,0],[0,5,1],[0,4,2],[0,3,3],
-    [0,2,4],[0,1,5],[0,0,6]
-];
+.sub-stat div {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+}
+.sub-stat select {
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+}
+.sub-stat-names { width: 66%; }
+.sub-stat-display-values { width: 33%; }
 
-class SubStat {
-    constructor(name, initialValues, decimalPlaces, weight) {
-        this.name = name;
-        this.values = new Array(83);
-        this.groups = [];
-        this.weight = weight;
-
-        for (let i = 0; i < COMBINATIONS.length; i++) {
-            this.values[i] = new PossibleValue(initialValues, COMBINATIONS[i], decimalPlaces);
-        }
-
-        this.values.sort((a,b) => a.value - b.value);
-
-        let prev = "";
-        let group = [];
-        let isFirst = true;
-        for (let v of this.values) {
-            let crnt = v.displayValue;
-            if (isFirst) {
-                isFirst = false;
-            } else if (crnt != prev) {
-                this.groups.push(group);
-                group = [];
-            }
-            group.push(v);
-            prev = crnt;
-        }
-        this.groups.push(group);
-    }
-
-    calcScore(v) {
-        return round(v.rate * this.weight * 10, 1);
-    }
+.sub-stat label {
+    width: 50%;
+    font-size: 13px;
+}
+.sub-stat-weight {
+    width: 50%;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
 }
 
-const data = [
-    new SubStat("HP", [33.87, 38.103755, 42.33751], 0, 0.60),
-    new SubStat("攻撃力", [16.935, 19.051877, 21.168754], 0, 0.60),
-    new SubStat("防御力", [16.935, 19.051877, 21.168754], 0, 0.60),
-    new SubStat("速度", [2.0, 2.3, 2.6], 0, 1.04),
-    new SubStat("HP%", [3.456, 3.888, 4.32], 1, 1),
-    new SubStat("攻撃力%", [3.456, 3.888, 4.32], 1, 1),
-    new SubStat("防御力%", [4.32, 4.86, 5.4], 1, 1),
-    new SubStat("会心率", [2.592, 2.916, 3.24], 1, 1),
-    new SubStat("会心ダメージ", [5.184, 5.832, 6.48], 1, 1),
-    new SubStat("撃破特攻", [5.184, 5.832, 6.48], 1, 1),
-    new SubStat("効果命中", [3.456, 3.888, 4.32], 1, 1),
-    new SubStat("効果抵抗", [3.456, 3.888, 4.32], 1, 1)
-];
-
-/* UI components */
-
-// Very pale tone
-const COLORS = ["#FBDAC8","#FEECD2","#FFFCDB","#D4ECEA","#D3DEF1","#D2CCE6"];
-
-function clear(e) {
-    while (e.firstChild != null) {
-        e.removeChild(e.firstChild);
-    }
+.sub-stat-details {
+    width: 100%;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    border-radius: 5px;
+    border-spacing: 0;
+    border: none;
+    border-top: 1px solid var(--border-color);
+    border-left: 1px solid var(--border-color);
 }
-
-function createElementWithText(tagName, text) {
-    e = document.createElement(tagName);
-    e.appendChild(document.createTextNode(text));
-    return e;
+.sub-stat-details th {
+    height: 30px;
+    font-size: 13px;
 }
-
-class SubStatOption {
-    constructor(no) {
-        this.names = document.getElementById("sub-stat-names" + no);
-        this.values = document.getElementById("sub-stat-display-values" + no);
-        this.details = document.getElementById("sub-stat-details" + no);
-        this.weight = document.getElementById("sub-stat-weight" + no);
-
-        for (let stat of data) {
-            this.names.appendChild(createElementWithText("option", stat.name));
-        }
-        switch (no) {
-            case 0: this.names.selectedIndex = 1; break;
-            case 1: this.names.selectedIndex = 5; break;
-            case 2: this.names.selectedIndex = 7; break;
-            case 3: this.names.selectedIndex = 8; break;
-            default:
-        }
-
-        this.updateWeight();
-        this.updateValues()
-        this.updateDetails()
-
-        this.names.addEventListener("change", () => {
-            this.updateWeight();
-            this.updateValues();
-            this.updateDetails();
-            updateScore();
-        });
-
-        this.weight.addEventListener("change", () => {
-            data[this.names.selectedIndex].weight = this.weight.value;
-            this.updateDetails();
-            updateScore();
-        });
-
-        this.values.addEventListener("change", () => {
-            this.updateDetails();
-            updateScore();
-        });
-    }
-
-    updateWeight() {
-        this.weight.value = data[this.names.selectedIndex].weight;
-    }
-
-    updateValues() {
-        clear(this.values);
-        let stat = data[this.names.selectedIndex];
-        for (let group of stat.groups) {
-            let op = createElementWithText("option", group[0].displayValue);
-            op.style.background = COLORS[group[0].timesUpgrade];
-            this.values.appendChild(op);
-        }
-    }
-
-    updateDetails() {
-        clear(this.details)
-        let tr = document.createElement("tr");
-        tr.appendChild(createElementWithText("th", "強化"));
-        tr.appendChild(createElementWithText("th", "近似値"));
-        tr.appendChild(createElementWithText("th", "low"));
-        tr.appendChild(createElementWithText("th", "med"));
-        tr.appendChild(createElementWithText("th", "high"));
-        tr.appendChild(createElementWithText("th", "score"));
-        this.details.appendChild(tr);
-
-        let stat = data[this.names.selectedIndex];
-        for (let v of stat.groups[this.values.selectedIndex]) {
-            tr = document.createElement("tr");
-            tr.style.background = COLORS[v.timesUpgrade];
-            tr.appendChild(createElementWithText("td", "+" + v.timesUpgrade));
-            tr.appendChild(createElementWithText("td", v.value));
-            tr.appendChild(createElementWithText("td", v.combination[0]));
-            tr.appendChild(createElementWithText("td", v.combination[1]));
-            tr.appendChild(createElementWithText("td", v.combination[2]));
-            tr.appendChild(createElementWithText("td", stat.calcScore(v)));
-            this.details.appendChild(tr);
-        }
-    }
+.sub-stat-details td {
+    height: 35px;
 }
-
-const options = [
-    new SubStatOption(0),
-    new SubStatOption(1),
-    new SubStatOption(2),
-    new SubStatOption(3)
-];
-
-const score = document.getElementById("score");
-
-updateScore();
-
-function updateScore() {
-    let min = 0;
-    let max = 0;
-    for (let i = 0; i < 4; i++) {
-        let stat = data[options[i].names.selectedIndex];
-        let group = stat.groups[options[i].values.selectedIndex];
-        min += stat.calcScore(group[0]);
-        max += stat.calcScore(group[group.length -1]);
-    }
-    min = round(min, 1);
-    max = round(max, 1);
-    if (min == max) {
-        score.textContent = min;
-    } else {
-        score.innerHTML = `${min}&ndash;${max}`;
-    }
+.sub-stat-details tr:nth-child(even) {
+    background-color: var(--bg-color)
 }
+.sub-stat-details tr>* { width: 13.333%; }
+.sub-stat-details tr>*:first-child { width: 15% }
+.sub-stat-details tr>*:last-child { width: 15% }
+.sub-stat-details tr>*:nth-child(2) { width: 30%; }
+.sub-stat-details tr>* {
+    padding: 0px;
+    text-align: center;
+    border: none;
+    border-right: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border-color);
+}
+.sub-stat-details tr:first-child th:first-child { border-radius: 5px 0 0 0; }
+.sub-stat-details tr:first-child th:last-child { border-radius: 0 5px 0 0; }
+.sub-stat-details tr:last-child td:first-child { border-radius: 0 0 0 5px; }
+.sub-stat-details tr:last-child td:last-child { border-radius: 0 0 5px 0; }
+
+.how-to {
+    margin: 15px;
+    border: 5px dotted #F5B2B2;
+    padding: 10px;
+}
+.how-to h5 {
+    margin: 0px;
+}
+.how-to p {
+    font-size: 13.5px;
+}
+    </style>
+</head>
+<body>
+
+<div class="wrapper">
+    <header>
+        <h2>5★遺物サブステータス解析ツール</h2>
+    </header>
+
+    <p class="score">TOTAL SCORE：<span id="score"></span></p>
+    <div class="container">
+        <div class="sub-stat">
+            <div>
+                <select class="sub-stat-names"></select>
+                <select class="sub-stat-display-values"></select>
+            </div>
+            <table class="sub-stat-details"></table>
+            <label>重み：<input class="sub-stat-weight" type="number" value="1" step="0.1" min="0" /></label>
+        </div>
+        <div class="sub-stat">
+            <div>
+                <select class="sub-stat-names"></select>
+                <select class="sub-stat-display-values"></select>
+            </div>
+            <table class="sub-stat-details"></table>
+            <label>重み：<input class="sub-stat-weight" type="number" value="1" step="0.1" min="0" /></label>
+        </div>
+        <div class="sub-stat">
+            <div>
+                <select class="sub-stat-names"></select>
+                <select class="sub-stat-display-values"></select>
+            </div>
+            <table class="sub-stat-details"></table>
+            <label>重み：<input class="sub-stat-weight" type="number" value="1" step="0.1" min="0" /></label>
+        </div>
+        <div class="sub-stat">
+            <div>
+                <select class="sub-stat-names"></select>
+                <select class="sub-stat-display-values"></select>
+            </div>
+            <table class="sub-stat-details"></table>
+            <label>重み：<input class="sub-stat-weight" type="number" value="1" step="0.1" min="0" /></label>
+        </div>
+    </div>
+
+    <script src="calc.js"></script>
+
+    <div class="how-to">
+        <h5>使い方</h5>
+
+        <p>5★遺物のサブステータスにしか対応していません。5★遺物のサブステータスを入力してください。<br />
+            速度の小数点第一位の値、効果抵抗の小数点第二位の値は遺物を複数装備させることで確認できます。<br />
+            サブステータスの初期値または上昇値は三段階（low, med, high）存在していて、その抽選回数がテーブルに表示されます。<br />
+            scoreはメインステータスの最大バフ量が100となるように調整しており、必要ないサブステータスの重みを0にしてご利用ください。
+            ※防御固定値に関しては攻撃固定値と同様に調整しています。</p>
+    </div>
+
+    <blockquote>
+        <p><cite>出典1：<a href="https://honkai-star-rail.fandom.com/wiki/Relic/Stats">Relic/Stats | Honkai: Star Rail Wiki | Fandom</a></cite></p>
+        <p><cite>出典2：<a href="https://wikiwiki.jp/star-rail/%E9%81%BA%E7%89%A9#enhance">遺物 - 崩壊スターレイル Wiki*</a></cite></p>
+    </blockquote>
+</div>
+
+</body>
+</html>
