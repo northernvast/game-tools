@@ -1,44 +1,38 @@
-function round(value, digits) {
-    let n = Math.pow(10, digits);
-    return Math.round(value * n) / n;
+
+function round(number, scale) {
+    let power = Math.pow(10, scale);
+    return Math.round(number * power) / power;
 }
 
-function format(value, digits) {
-    if (digits == 0) {
-        return Math.floor(value).toString();
+function format(number, scale) {
+    if (scale == 0) {
+        return Math.floor(number).toString();
     }
-    let s = Math.floor(value * Math.pow(10, digits)).toString();
-    let p = s.length - digits;
+    let s = Math.floor(number * Math.pow(10, scale)).toString();
+    let p = s.length - scale;
     return s.slice(0, p) + "." + s.slice(p);
 }
 
 class PossibleValue {
-    constructor(stat, comb) {
+    constructor(stat, quantities) {
         this.stat = stat;
-        this.comb = comb;
+        this.quantities = quantities;
     }
 
     #calc(digits) {
-        let [low, med, high] = this.stat.initVals;
-        let [l, m, h] = this.comb;
+        let [low, med, high] = this.stat.initialValues;
+        let [l, m, h] = this.quantities;
         let n = Math.pow(10, digits);
         return Math.floor(n*low*l + n*med*m + n*high*h) / n;
     }
 
     get value() { return this.#calc(3); }
 
-    get displayValue() {
-        return format(this.value, this.stat.decimalPlaces); // String
-    }
+    get displayValue() { return format(this.value, this.stat.scale); }
 
-    get timesUpgrade() {
-        let [l, m, h] = this.comb;
-        return l + m + h -1;
-    }
+    get level() { return this.quantities.reduce((a,b)=>a+b, -1); }
 
-    get score() {
-        return round(this.value / this.stat.initVals[2] * this.stat.weight * 10, 1)
-    }
+    get score() { return round(this.value / this.stat.initialValues[2] * this.stat.weight * 10, 1); }
 }
 
 class SubStat {
@@ -54,10 +48,10 @@ class SubStat {
         [0,2,4],[0,1,5],[0,0,6]
     ];
 
-    constructor(name, initVals, decimalPlaces, weight) {
+    constructor(name, initialValues, scale, weight) {
         this.name = name;
-        this.initVals = initVals;
-        this.decimalPlaces = decimalPlaces;
+        this.initialValues = initialValues;
+        this.scale = scale;
         this.weight = weight;
         this.values = new Array(83);
         this.groups = [];
@@ -117,12 +111,12 @@ function createElementWithText(tagName, text) {
     return e;
 }
 
-class SubStatElement {
+class SubStatPicker {
     constructor(parent, index) {
         this.names = parent.getElementsByClassName("sub-stat-names")[0];
         this.values = parent.getElementsByClassName("sub-stat-display-values")[0];
-        this.details = parent.getElementsByClassName("sub-stat-details")[0];
         this.weight = parent.getElementsByClassName("sub-stat-weight")[0];
+        this.details = parent.getElementsByClassName("sub-stat-details")[0];
 
         for (let stat of data) {
             this.names.appendChild(createElementWithText("option", stat.name));
@@ -137,18 +131,15 @@ class SubStatElement {
             this.updateWeight();
             this.updateValues();
             this.updateDetails();
-            updateScore();
         });
 
         this.weight.addEventListener("change", () => {
             data[this.names.selectedIndex].weight = this.weight.value;
             this.updateDetails();
-            updateScore();
         });
 
         this.values.addEventListener("change", () => {
             this.updateDetails();
-            updateScore();
         });
     }
 
@@ -161,7 +152,7 @@ class SubStatElement {
         let stat = data[this.names.selectedIndex];
         for (let group of stat.groups) {
             let op = createElementWithText("option", group[0].displayValue);
-            op.style.background = COLORS[group[0].timesUpgrade];
+            op.style.background = COLORS[group[0].level];
             this.values.appendChild(op);
         }
     }
@@ -180,47 +171,50 @@ class SubStatElement {
         let stat = data[this.names.selectedIndex];
         for (let v of stat.groups[this.values.selectedIndex]) {
             tr = document.createElement("tr");
-            tr.style.background = COLORS[v.timesUpgrade];
-            tr.appendChild(createElementWithText("td", "+" + v.timesUpgrade));
+            tr.style.background = COLORS[v.level];
+            tr.appendChild(createElementWithText("td", "+" + v.level));
             tr.appendChild(createElementWithText("td", v.value));
-            tr.appendChild(createElementWithText("td", v.comb[0]));
-            tr.appendChild(createElementWithText("td", v.comb[1]));
-            tr.appendChild(createElementWithText("td", v.comb[2]));
+            tr.appendChild(createElementWithText("td", v.quantities[0]));
+            tr.appendChild(createElementWithText("td", v.quantities[1]));
+            tr.appendChild(createElementWithText("td", v.quantities[2]));
             tr.appendChild(createElementWithText("td", v.score));
             this.details.appendChild(tr);
         }
     }
 }
 
-const subStats = [];
+const pickers = [];
 const score = document.getElementById("score");
 
 function updateScore() {
     let min = 0;
     let max = 0;
     for (let i = 0; i < 4; i++) {
-        let stat = data[subStats[i].names.selectedIndex];
-        let group = stat.groups[subStats[i].values.selectedIndex];
+        let stat = data[pickers[i].names.selectedIndex];
+        let group = stat.groups[pickers[i].values.selectedIndex];
         min += group[0].score;
         max += group[group.length -1].score;
     }
-    min = round(min, 1);
-    max = round(max, 1);
     if (min == max) {
-        score.textContent = min;
+        score.textContent = round(min,1);
     } else {
-        score.innerHTML = `${min}&ndash;${max}`;
+        score.innerHTML = `${round(min,1)}&ndash;${round(max,1)}`;
     }
 }
 
 function init() {
     let parents = document.getElementsByClassName("sub-stat");
-    subStats.push(new SubStatElement(parents[0], 1));
-    subStats.push(new SubStatElement(parents[1], 5));
-    subStats.push(new SubStatElement(parents[2], 7));
-    subStats.push(new SubStatElement(parents[3], 8));
+    pickers.push(new SubStatPicker(parents[0], 1));
+    pickers.push(new SubStatPicker(parents[1], 5));
+    pickers.push(new SubStatPicker(parents[2], 7));
+    pickers.push(new SubStatPicker(parents[3], 8));
+
+    for (let s of pickers) {
+        s.names.addEventListener("change", updateScore);
+        s.values.addEventListener("change", updateScore);
+        s.weight.addEventListener("change", updateScore);
+    }
     updateScore();
 }
 
 init();
-
