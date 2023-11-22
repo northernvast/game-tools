@@ -5,125 +5,118 @@
     <title>崩壊スターレイル 遺物サブステータス解析ツール</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-* { box-sizing: border-box; }
-:root {
-    --bg-color: #f2f2f2;
-    --border-color: #aaa;
-}
-body {
-    margin: 0px;
-    font-family: arial, sans-serif;
-}
-.wrapper {
-    margin-left: auto;
-    margin-right: auto;
-    min-height: 100vh;
-    max-width: 1100px;
-    border-left: 1px solid var(--border-color);
-    border-right: 1px solid var(--border-color);
-}
+        * { box-sizing: border-box; }
+        :root {
+            --bg-color: #f2f2f2;
+            --border-color: #aaa;
+        }
+        body {
+            margin: 0px;
+            font-family: arial, sans-serif;
+        }
+        .wrapper {
+            margin-left: auto;
+            margin-right: auto;
+            min-height: 100vh;
+            max-width: 1100px;
+            border-left: 1px solid var(--border-color);
+            border-right: 1px solid var(--border-color);
+        }
 
-header {
-    background-color: #D7E7AF;
-    width: 100%;
-    border-top: 1px solid var(--border-color);
-    border-bottom: 1px solid var(--border-color);
-    margin: 0px;
-    text-align: center;
-}
-h1 {
-    color: #444;
-    font-size: 15px;
-    font-weight: bold;
-}
+        header {
+            background-color: #D7E7AF;
+            width: 100%;
+            border-top: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+            margin: 0px;
+            text-align: center;
+        }
+        h1 {
+            color: #444;
+            font-size: 15px;
+            font-weight: bold;
+        }
 
-.score { margin-left: 15px; }
+        .score { margin-left: 15px; }
 
-.container {
-    width: 100%;
-    display: flex;
-    justify-content: space-around;
-}
-.sub-stat {
-    width: 25%;
-    padding: 10px;
-    text-align: center;
-}
-@media screen and (max-width: 900px) and (min-width: 600px) {
-    .container { flex-wrap: wrap; }
-    .sub-stat { width: 50%; }
-}
-@media screen and (max-width: 600px) {
-    .container { display: block; }
-    .sub-stat { width: 100%; }
-}
+        .container {
+            width: 100%;
+            display: flex;
+            justify-content: space-around;
+        }
+        .sub-stat {
+            width: 25%;
+            padding: 10px;
+            text-align: center;
+        }
+        @media screen and (max-width: 900px) and (min-width: 600px) {
+            .container { flex-wrap: wrap; }
+            .sub-stat { width: 50%; }
+        }
+        @media screen and (max-width: 600px) {
+            .container { display: block; }
+            .sub-stat { width: 100%; }
+        }
 
-.sub-stat div {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-}
-.sub-stat-names, .sub-stat-display-values {
-    border: 1px solid var(--border-color);
-    border-radius: 5px;
-}
-.sub-stat-names { width: 66%; }
-.sub-stat-display-values { width: 33%; }
+        .sub-stat div {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+        }
+        .sub-stat-names, .sub-stat-display-values {
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+        }
+        .sub-stat-names { width: 66%; }
+        .sub-stat-display-values { width: 33%; }
 
-.sub-stat label { font-size: 13px; }
-.sub-stat-weight {
-    width: 50%;
-    border: 1px solid var(--border-color);
-    border-radius: 5px;
-}
+        .sub-stat label { font-size: 13px; }
+        .sub-stat-weight {
+            width: 50%;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+        }
 
-.sub-stat-details {
-    width: 100%;
-    margin-top: 5px;
-    margin-bottom: 5px;
-    border-radius: 5px;
-    border-spacing: 0;
-    border: none;
-    border-top: 1px solid var(--border-color);
-    border-left: 1px solid var(--border-color);
-}
-.sub-stat-details th {
-    height: 30px;
-    font-size: 13px;
-}
-.sub-stat-details td {
-    height: 35px;
-}
-.sub-stat-details tr:nth-child(even) {
-    background-color: var(--bg-color)
-}
-.sub-stat-details tr>* { width: 13.333%; }
-.sub-stat-details tr>*:first-child { width: 15% }
-.sub-stat-details tr>*:last-child { width: 15% }
-.sub-stat-details tr>*:nth-child(2) { width: 30%; }
-.sub-stat-details tr>* {
-    padding: 0px;
-    text-align: center;
-    border: none;
-    border-right: 1px solid var(--border-color);
-    border-bottom: 1px solid var(--border-color);
-}
-.sub-stat-details tr:first-child th:first-child { border-radius: 5px 0 0 0; }
-.sub-stat-details tr:first-child th:last-child { border-radius: 0 5px 0 0; }
-.sub-stat-details tr:last-child td:first-child { border-radius: 0 0 0 5px; }
-.sub-stat-details tr:last-child td:last-child { border-radius: 0 0 5px 0; }
+        .sub-stat-details {
+            width: 100%;
+            margin-top: 5px;
+            margin-bottom: 5px;
+            border-radius: 5px;
+            border-spacing: 0;
+            border: none;
+            border-top: 1px solid var(--border-color);
+            border-left: 1px solid var(--border-color);
+        }
+        .sub-stat-details th {
+            font-size: 13px;
+        }
+        .sub-stat-details tr>* {
+            text-align: center;
+            padding: 5px 0px 5px 0px;
+            border: none;
+            border-right: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+        }
+        .sub-stat-details tr>*:nth-child(1) { width: 15% }
+        .sub-stat-details tr>*:nth-child(2) { width: 30%; }
+        .sub-stat-details tr>*:nth-child(3):nth-child(5) { width: 13.333%; }
+        .sub-stat-details tr>*:nth-child(6) { width: 15% }
+        .sub-stat-details tr:first-child>*:first-child { border-radius: 5px 0 0 0; }
+        .sub-stat-details tr:first-child>*:last-child { border-radius: 0 5px 0 0; }
+        .sub-stat-details tr:last-child>*:last-child { border-radius: 0 0 5px 0; }
+        .sub-stat-details tr:last-child>*:first-child { border-radius: 0 0 0 5px; }
 
-.how-to {
-    margin: 15px;
-    border: 5px dotted #F5B2B2;
-    padding: 10px;
-}
-.how-to h5 {
-    margin: 0px;
-}
-.how-to p {
-    font-size: 13.5px;
-}
+        .how-to {
+            margin: 15px;
+            border: 5px dotted #F5B2B2;
+            padding: 10px;
+        }
+        .how-to h5 {
+            margin: 0px;
+        }
+        .how-to p {
+            font-size: 13.5px;
+        }
     </style>
 </head>
 <body>
