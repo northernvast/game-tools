@@ -1,3 +1,4 @@
+function last(array) { return array[array.length -1]; }
 
 function round(number, scale) {
     let power = Math.pow(10, scale);
@@ -32,7 +33,7 @@ class PossibleValue {
 
     get level() { return this.quantities.reduce((a,b)=>a+b, -1); }
 
-    get score() { return round(this.value / this.stat.initialValues[2] * this.stat.weight * 10, 1); }
+    get score() { return round(this.value / last(this.stat.initialValues) * this.stat.weight * 10, 1); }
 }
 
 class SubStat {
